@@ -7,6 +7,8 @@ public class ChessController {
     int[] deadQueen;
     // logging the queen positions
     LinkedList<int[]> queenLog = new LinkedList<>();
+    // Set debug to true if you want to see the algorithm details in the log
+    boolean debug = false;
 
     public static void main(String[] args) {
         ChessController cs = new ChessController();
@@ -18,25 +20,26 @@ public class ChessController {
         int currX = 0;
         int currMaxX = 0;
         int backTraceValue = 1;
+
         while (currX < board.width) {
-            System.out.println("current x: " + currX);
+            log("current x: " + currX);
             boolean success = processColumn(currX);
-            board.print();
+            if (debug) board.print();
             // If no success, remove the last queen and try again
             if (!success) {
                 deadQueen = null;
-                System.out.println("Cleard dead queen");
+                log("Cleard dead queen");
                 for (int i = 0; i < (currMaxX - backTraceValue); i++) {
                     int oldX = queenLog.getLast()[0];
                     int oldY = queenLog.getLast()[1];
                     board.removeQueen(oldX, oldY);
                     deadQueen = new int[]{oldX, oldY};
-                    System.out.println("Dead Queen = " + oldX + " " + oldY);
+                    log("Dead Queen = " + oldX + " " + oldY);
                     queenLog.removeLast();
-                    System.out.println("backtraced (" + currX + ")! removed queen " + oldX + " " + oldY);
+                    log("backtraced (" + currX + ")! removed queen " + oldX + " " + oldY);
                 }
-                System.out.println("backtracing steps: " + currMaxX + " | " + backTraceValue + " -> " + (currMaxX - backTraceValue));
-                board.print();
+                log("backtracing steps: " + currMaxX + " | " + backTraceValue + " -> " + (currMaxX - backTraceValue));
+                if (debug) board.print();
                 currX -= (currMaxX - backTraceValue);
                 backTraceValue++;
             } else {
@@ -49,6 +52,10 @@ public class ChessController {
                 break;
             }
         }
+
+        // Riddle solved!
+        System.out.println("RIDDLE SOLVED");
+        board.prettyPrint();
     }
 
     /**
@@ -88,6 +95,16 @@ public class ChessController {
             queenLog.add(new int[]{x,y});
         } else {
             System.out.println("Field " + x + " " + y + " is already blocked");
+        }
+    }
+
+    /**
+     * Log something if debug mode is on
+     * @param msg
+     */
+    public void log(String msg) {
+        if (debug) {
+            System.out.println(msg);
         }
     }
 }

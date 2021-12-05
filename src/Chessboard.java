@@ -1,8 +1,8 @@
 public class Chessboard {
-    public static int QUEEN = -9;
-    public static int BLOCKED_UNIT = 1; // The higher the number the more queens are blocking the field
-    public static int DEBLOCK_UNIT = -1;
-    public static int EMPTY = 0;
+    public final static int QUEEN = -9;
+    public final static int BLOCKED_UNIT = 1; // The higher the number the more queens are blocking the field
+    public final static int DEBLOCK_UNIT = -1;
+    public final static int EMPTY = 0;
 
     int width = 8;
     int height = 8;
@@ -106,18 +106,41 @@ public class Chessboard {
 
     /**
      * Print the chessboard to the console
+     * @boolean pretty
      */
-    public void print() {
+    public void print(boolean pretty) {
         System.out.println("--------board---------");
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (board[x][y] >= 0) {
-                    System.out.print(" " + board[x][y] + " ");
+                if (pretty) {
+                    if (board[x][y] == Chessboard.QUEEN) {
+                        System.out.print("\u001B[36m♛ \u001B[0m");
+                    } else {
+                        System.out.print(x%2 == 0 ? "▧ " : "▨ ");
+                    }
                 } else {
-                    System.out.print(board[x][y] + " ");
+                    if (board[x][y] >= 0) {
+                        System.out.print(" " + board[x][y] + " ");
+                    } else {
+                        System.out.print(board[x][y] + " ");
+                    }
                 }
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Overload print method
+     */
+    public void print () {
+        print(false);
+    }
+
+    /**
+     * Overload print method
+     */
+    public void prettyPrint () {
+        print(true);
     }
 }
