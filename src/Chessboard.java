@@ -10,12 +10,7 @@ public class Chessboard {
     int board[][] = new int[8][8];
 
     public Chessboard() {
-        for (int x = 0; x < width; x++) {
-            board[x] = new int[height];
-            for (int y = 0; y < height; y++) {
-                board[x][y] = Chessboard.EMPTY;
-            }
-        }
+        reset();
     }
 
     /**
@@ -39,6 +34,34 @@ public class Chessboard {
     }
 
     /**
+     * Checks if a column has a queen
+     * @param x
+     * @return
+     */
+    public boolean hasColumnQueen(int x) {
+        for (int y = 0; y < height; y++) {
+            if (board[x][y] == Chessboard.QUEEN) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a column has empty fields
+     * @param x
+     * @return
+     */
+    public boolean hasColumnEmptyFields(int x) {
+        for (int y = 0; y < height; y++) {
+            if (board[x][y] == Chessboard.EMPTY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Set Figure on x y chessboard field
      * @param x
      * @param y
@@ -56,6 +79,15 @@ public class Chessboard {
     public void setQueen(int x, int y) {
         set(x, y, Chessboard.QUEEN);
         this.changeFromField(x, y, Chessboard.BLOCKED_UNIT);
+    }
+
+    /**
+     * Blocking a field
+     * @param x
+     * @param y
+     */
+    public void blockField(int x, int y) {
+        board[x][y] += Chessboard.BLOCKED_UNIT;
     }
 
     /**
@@ -101,6 +133,27 @@ public class Chessboard {
             if (yDown < height) board[xi][yDown] += newState;
             yUp--;
             yDown++;
+        }
+    }
+
+    /**
+     * Resets the whole board
+     */
+    public void reset() {
+        for (int x = 0; x < width; x++) {
+            board[x] = new int[height];
+            for (int y = 0; y < height; y++) {
+                board[x][y] = Chessboard.EMPTY;
+            }
+        }
+    }
+
+    /**
+     * Resets a column
+     */
+    public void resetColumn(int x) {
+        for (int y = 0; y < height; y++) {
+            board[x][y] = Chessboard.EMPTY;
         }
     }
 
