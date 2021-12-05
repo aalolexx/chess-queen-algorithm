@@ -17,14 +17,41 @@ public class Chessboard {
         }
     }
 
+    /**
+     * Get Figure on x y chessboard field
+     * @param x
+     * @param y
+     * @return
+     */
     public int get(int x, int y) {
         return board[x][y];
     }
 
+    /**
+     * Checks if field is empty
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isEmpty(int x, int y) {
+        return board[x][y] == Chessboard.EMPTY;
+    }
+
+    /**
+     * Set Figure on x y chessboard field
+     * @param x
+     * @param y
+     * @param value
+     */
     private void set(int x, int y, int value) {
         board[x][y] = value;
     }
 
+    /**
+     * Set the queen on x y chessboard field
+     * @param x
+     * @param y
+     */
     public void setQueen(int x, int y) {
         set(x, y, Chessboard.QUEEN);
     }
@@ -51,6 +78,9 @@ public class Chessboard {
         }
     }
 
+    /**
+     * Print the chessboard to the console
+     */
     public void print() {
         System.out.println("--------board---------");
         for (int y = 0; y < height; y++) {
