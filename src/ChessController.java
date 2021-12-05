@@ -8,19 +8,43 @@ public class ChessController {
     // logging the queen positions
     LinkedList<int[]> queenLog = new LinkedList<>();
     // Set debug to true if you want to see the algorithm details in the log
-    boolean debug = true;
+    boolean debug;
+    // Track the amount of queens for final check
+    int queenAmount = 0;
 
     public static void main(String[] args) {
         ChessController cs = new ChessController();
+        cs.init(4, 4, true);
         cs.start();
     }
 
-    public void start () {
-        board = new Chessboard();
-        deadQueens = new Chessboard();
+    /**
+     * Inits the algorithm
+     * @param boardWidth
+     * @param boardHeight
+     * @param debugMode
+     */
+    public void init (int boardWidth, int boardHeight, boolean debugMode) {
+        this.debug = debugMode;
+        board = new Chessboard(boardWidth, boardHeight);
+        deadQueens = new Chessboard(boardWidth, boardHeight);
+    }
 
+    public boolean start() {
+        return start(0);
+    }
+
+    public boolean start (int startY) {
         int currX = 0;
         int backTraceColumn;
+
+        // Block fields to startingY -> used for previous failed attempts
+        for (int y = 0; y < startY; y++) {
+            board.blockField(0, y);
+        }
+        if (startY == board.height-1) {
+            return false;
+        }
 
         while (currX < board.width) {
             log("current x: " + currX);
@@ -39,6 +63,7 @@ public class ChessController {
                     int oldX = queenLog.getLast()[0];
                     int oldY = queenLog.getLast()[1];
                     board.removeQueen(oldX, oldY);
+                    queenAmount--;
                     deadQueens.blockField(oldX, oldY);
                     queenLog.removeLast();
                     log("backtraced (" + currX + ")! removed queen " + oldX + " " + oldY);
@@ -54,17 +79,21 @@ public class ChessController {
 
                 if (debug) board.print();
             }
-
-            // If backtracing reaches 0 something went wrong
-            if (currX == 0) {
-                System.out.println("couldnt solve the riddle... SORRY :(");
-                break;
-            }
         }
 
-        // Riddle solved!
-        System.out.println("RIDDLE SOLVED");
-        board.prettyPrint();
+        if (queenAmount == board.width) {
+            // Riddle solved!
+            System.out.println("RIDDLE SOLVED");
+            board.prettyPrint();
+            return true;
+        } else {
+            // Riddle not solved
+            log("attempt " + startY + " failed, trying new startingY");
+            queenAmount = 0;
+            board.reset();
+            startY++;
+            return start(startY);
+        }
     }
 
     /**
@@ -133,6 +162,7 @@ public class ChessController {
         // Set the queen
         if (board.isEmpty(x, y)) {
             board.setQueen(x, y);
+            queenAmount++;
             queenLog.add(new int[]{x,y});
         } else {
             System.out.println("Field " + x + " " + y + " is already blocked");

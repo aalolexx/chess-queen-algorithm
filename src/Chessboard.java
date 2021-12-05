@@ -4,12 +4,19 @@ public class Chessboard {
     public final static int DEBLOCK_UNIT = -1;
     public final static int EMPTY = 0;
 
-    int width = 8;
-    int height = 8;
+    int width;
+    int height;
 
-    int board[][] = new int[8][8];
+    int board[][];
 
     public Chessboard() {
+        this(8, 8);
+    }
+
+    public Chessboard(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.board = new int[width][height];
         reset();
     }
 
