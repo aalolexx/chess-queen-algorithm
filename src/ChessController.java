@@ -1,10 +1,12 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class ChessController {
     Chessboard board;
+    // To Block the last failed attempt
+    int[] deadQueen;
     // logging the queen positions
     LinkedList<int[]> queenLog = new LinkedList<>();
-    int currX = 0;
 
     public static void main(String[] args) {
         ChessController cs = new ChessController();
@@ -13,22 +15,54 @@ public class ChessController {
 
     public void start () {
         board = new Chessboard();
-        for (currX = 0; currX < board.width; currX++) {
+        int currX = 0;
+        int currMaxX = 0;
+        int backTraceValue = 1;
+        while (currX < board.width) {
+            System.out.println("current x: " + currX);
+            boolean success = processColumn(currX);
             board.print();
-            processColumn(currX);
+            // If no success, remove the last queen and try again
+            if (!success) {
+                deadQueen = null;
+                System.out.println("Cleard dead queen");
+                for (int i = 0; i < (currMaxX - backTraceValue); i++) {
+                    int oldX = queenLog.getLast()[0];
+                    int oldY = queenLog.getLast()[1];
+                    board.removeQueen(oldX, oldY);
+                    deadQueen = new int[]{oldX, oldY};
+                    System.out.println("Dead Queen = " + oldX + " " + oldY);
+                    queenLog.removeLast();
+                    System.out.println("backtraced (" + currX + ")! removed queen " + oldX + " " + oldY);
+                }
+                System.out.println("backtracing steps: " + currMaxX + " | " + backTraceValue + " -> " + (currMaxX - backTraceValue));
+                board.print();
+                currX -= (currMaxX - backTraceValue);
+                backTraceValue++;
+            } else {
+                currX++;
+                if (currMaxX < currX) currMaxX = currX;
+            }
+            // If backtracing reaches 0 something went wrong
+            if (currX == 0) {
+                System.out.println("couldnt solve the riddle... SORRY :(");
+                break;
+            }
         }
     }
 
     /**
      * Checks the next available field for a queen in a given column
      * @param x
+     * @return if there was an available field for queen
      */
-    public void processColumn (int x) {
+    public boolean processColumn (int x) {
         int availableY = -1;
         int currY = 0;
         // Check if there is an empty/available field in the collumn
         while (availableY == -1 && currY < board.width) {
-            if (board.isEmpty(x, currY)) {
+            if (board.isEmpty(x, currY)
+                && (deadQueen == null || !(deadQueen[0] == x && deadQueen[1] == currY))) {
                 availableY = currY;
             }
             currY++;
@@ -36,8 +70,9 @@ public class ChessController {
         // If available continue, else backtrace algorithm
         if (availableY != -1) {
             setQueen(x, availableY);
+            return true;
         } else {
-            // TODO
+            return false;
         }
     }
 
@@ -48,14 +83,11 @@ public class ChessController {
      */
     public void setQueen(int x, int y) {
         // Set the queen
-        if (board.get(x, y) == 0) {
+        if (board.isEmpty(x, y)) {
             board.setQueen(x, y);
-            queenLog.push(new int[]{x,y});
+            queenLog.add(new int[]{x,y});
         } else {
             System.out.println("Field " + x + " " + y + " is already blocked");
         }
-
-        // Block all reachable fields
-        board.blockFromField(x, y);
     }
 }
